@@ -143,18 +143,22 @@ export default class ClientStore
     public SendPM(character: string, message: string): void {
         // Include any messages that are waiting
         let msgs: string = peopleStore.RetreiveMessages(character);
-        let final: string = "";
         if(msgs.length > 0) {
-            final += `
+            let msg: string = `
             ${PM_LINE_SEPARATOR}
             ${msgs}
-            ${PM_LINE_SEPARATOR}\r\n`
+            ${PM_LINE_SEPARATOR}\n`
+
+            let p: Packets.ISendPacketPRI = {
+                recipient: character,
+                message: msg
+            };
+            this.SendMessage("PRI", p);
         }
-        final += message;
 
         let p: Packets.ISendPacketPRI = {
             recipient: character,
-            message: final
+            message: message
         };
         this.SendMessage("PRI", p);
     }
