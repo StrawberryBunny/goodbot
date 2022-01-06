@@ -2,7 +2,7 @@
     "name": "goodbot",
     "version": "0.0.0",
     "main": "out/index.js",
-    "author": "Bully Meat",
+    "author": "Strawberry",
     "license": "MIT",
     "devDependencies": {
         "electron": "^16.0.5",
