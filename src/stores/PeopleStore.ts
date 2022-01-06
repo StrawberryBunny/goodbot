@@ -3,6 +3,7 @@ import { clientStore, peopleStore, statsStore } from ".";
 import { PERM_PM } from "../constants";
 import { IReceivePacketFLN, IReceivePacketNLN } from "../packets";
 import * as Constants from "../constants";
+import { STAT_PAYMENTS_MADE, STAT_PAYMENTS_TOTAL } from "./StatsStore";
 
 export default class PeopleStore {
 
@@ -143,8 +144,8 @@ export default class PeopleStore {
         // Log
         console.log(`${from} has sent ${amount} to ${to}`);
 
-        statsStore.AddToStat("Payments Made", 1, false);
-        statsStore.AddToStat("Payments Total", amount, true);
+        statsStore.AddToStat(STAT_PAYMENTS_MADE, 1, false);
+        statsStore.AddToStat(STAT_PAYMENTS_TOTAL, amount, true);
 
         // return
         return { err: "none" }

@@ -2,6 +2,7 @@ import * as fs from "fs";
 import { peopleStore, clientStore, statsStore } from ".";
 import * as Constants from "../constants";
 import { PersonData } from "./PeopleStore";
+import { STAT_SPERMBANK_DONATIONS, STAT_SPERMBANK_WITHDRAWALS } from "./StatsStore";
 
 export default class SpermBankStore {
 
@@ -54,7 +55,7 @@ export default class SpermBankStore {
 
         this.Save();
 
-        statsStore.AddToStat("SpermBank Donations", 1, true);
+        statsStore.AddToStat(STAT_SPERMBANK_DONATIONS, 1, true);
     }
 
     public Retrieve(character: string): void {
@@ -99,7 +100,7 @@ export default class SpermBankStore {
         // Save
         this.Save();
 
-        statsStore.AddToStat("SpermBank Withdrawals.", 1, true);
+        statsStore.AddToStat(STAT_SPERMBANK_WITHDRAWALS, 1, true);
     }
 }
 

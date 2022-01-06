@@ -18,6 +18,7 @@ export default class ClientStore
     private bufferTimerInterval: NodeJS.Timer = null;
     private characters: string[] = [];
     private connectedCount: number;
+    public connectionTime: Date;
 
     private inviteRequests: Packets.IReceivePacketCIU[] = [];
     private joinChannelRequests: IJoinChannelRequest[] = [];
@@ -285,7 +286,8 @@ export default class ClientStore
 
         if(this.characters.length >= this.connectedCount) {
             console.log(`All characters received. ${this.characters.length}/${this.connectedCount}`);
-            // TODO Do final log on things
+            
+            // Do final log on things
 
             // Set status
             let stap: Packets.ISendPacketSTA = {
@@ -293,6 +295,12 @@ export default class ClientStore
                 statusmsg: STATUS_MESSAGE
             };
             this.SendMessage("STA", stap);
+
+            // Record time
+            this.connectionTime = new Date();
+
+            // Joined at 
+            console.log("Finished connecting at " + new Date().toUTCString());
         }
     }
     

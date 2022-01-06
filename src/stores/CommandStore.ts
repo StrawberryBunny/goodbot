@@ -1,7 +1,7 @@
 import CommandNode from "../CommandNode";
 import * as Constants from "../constants";
 import { PaymentResult, PersonData } from "./PeopleStore";
-import { channelStore, clientStore, peopleStore, spermBankStore } from ".";
+import { channelStore, clientStore, peopleStore, spermBankStore, statsStore } from ".";
 
 export default class CommandStore {
 
@@ -85,7 +85,7 @@ export default class CommandStore {
         // Hi ---------------------------------------------------------------
         cn = new CommandNode("hi", 
         "Just says hi.",
-        "This is just a command that responds to hi.", 
+        "This is just a command that responds to [color=cyan]hi[/color].", 
         (pd: PersonData, sender: string, args: string[]) => {
             clientStore.SendPM(sender, "Hi! I am a bot! Say [color=cyan]list[/color] for a list of commands.");
         }, null);
@@ -269,6 +269,16 @@ export default class CommandStore {
                 }
             }, null)
         ]);
+        this.commandMap[cn.keyword.toLowerCase()] = cn;
+
+        // Stats Command =============================================================
+        cn = new CommandNode("stats", 
+        `Lists various stats about ${Constants.BOT_NAME}`,
+        `Just say [color=cyan]stats[/color]`, 
+        (pd: PersonData, sender: string, args: string[]) => {
+            let message: string = statsStore.CreateStatsMessage();
+            clientStore.SendPM(sender, message);
+        }, null);
         this.commandMap[cn.keyword.toLowerCase()] = cn;
 
         // Test Command =============================================================
