@@ -104,10 +104,20 @@ export default class ChannelStore
         clientStore.RequestChannelModInformation(channel);
     }
 
-    public IsOwner(channel: string, owner: string): boolean {
+    public IsOwner(channel: string, character: string): boolean {
         if(this.unofficial[channel] == null) ShowErrorDialog("Error", `Trying to check owner of ${channel} with no channel information.`);
         if(this.unofficial[channel].owner == null || this.unofficial[channel].owner.length < 3) ShowErrorDialog("Error", `Trying to check owner of ${channel} with no owner information.`);
-        return this.unofficial[channel].owner == owner;
+        return this.unofficial[channel].owner == character;
+    }
+
+    public IsOp(channel: string, character: string): boolean {
+        if(this.unofficial[channel] == null) ShowErrorDialog("Error", `Trying to check ops of ${channel} with no channel information`);
+        if(this.unofficial[channel].moderators == null) return false;
+        return this.unofficial[channel].moderators.indexOf(character) != -1;
+    }
+
+    public IsOwnerOrOp(channel: string, character: string): boolean {
+        return this.IsOwner(channel, character) || this.IsOp(channel, character);
     }
 
     public GetOwner(channel: string): string {

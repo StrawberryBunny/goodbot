@@ -19,6 +19,9 @@ export default class ClientStore
     private characters: string[] = [];
     private connectedCount: number;
     public connectionTime: Date;
+    private channels: string[] = [];
+    private msgForwarders: { [command: string]: any[] } = {};
+    private diceForwarders: { [channel: string]: any[] } = {};
 
     private inviteRequests: Packets.IReceivePacketCIU[] = [];
     private joinChannelRequests: IJoinChannelRequest[] = [];
@@ -104,9 +107,15 @@ export default class ClientStore
                 // Someone joined a channel
                 this.ReceiveCharacterJoinedChannelJCH(obj as Packets.IReceivePacketJCH);
                 break;
+            case "LCH":
+                this.ReceiveCharacterLeftChannelLCH(obj as Packets.IReceivePacketLCH);
+                break;
             case "LIS":
                 this.ReceiveCharListLIS(obj as Packets.IReceivePacketLIS);
                 // Received on identify
+                break;
+            case "MSG":
+                this.ReceiveChannelMessageMSG(obj as Packets.IReceivePacketMSG);
                 break;
             case "NLN":
                 this.ReceiveCameOnlineNLN(obj as Packets.IReceivePacketNLN);
@@ -116,6 +125,9 @@ export default class ClientStore
                 break;
             case "PRI":
                 this.ReceivePRI(obj as Packets.IReceivePacketPRI);
+                break;
+            case "RLL":
+                this.ReceiveRLL(obj as Packets.IReceivePacketRLL);
                 break;
             case "STA":
                 // Status updates, do nothing
@@ -192,6 +204,34 @@ export default class ClientStore
             channel: channel
         };
         this.SendMessage("COL", col);
+    }
+
+    public IsBotInChannel(channel: string): boolean {
+        return this.channels.indexOf(channel) != -1;
+    }
+
+    public RegisterMessageForwarder(command: string, cb: any): void {
+        if(this.msgForwarders[command.toLowerCase()] == null) {
+            this.msgForwarders[command.toLowerCase()] = [ cb ];
+            return;
+        }
+        else {
+            this.msgForwarders[command.toLowerCase()].push(cb);
+        }
+    }
+
+    public RegisterDiceForwarder(channel: string, expectedRoll: string, cb: any): void {
+        if(this.diceForwarders[channel] != null) {
+            throw new Error("A dice forwarder has already been added for this channel");
+        }
+        this.diceForwarders[channel] = cb;
+    }
+
+    public UnregisterDiceForwarder(channel: string): void  {
+        if(this.diceForwarders[channel] == null) {
+            throw new Error("A dice forwarder does not exist for this channel.");
+        }
+        this.diceForwarders[channel] = null;
     }
 
     // Buffer ========================================================
@@ -278,6 +318,17 @@ export default class ClientStore
                     console.log(`Joined ${channelStore.GetTitle(jcr.channel)} at ${jcr.requester}'s request.`);
                 }
             }
+
+            this.channels.push(p.channel);
+        }
+    }
+
+    private ReceiveCharacterLeftChannelLCH(p: Packets.IReceivePacketLCH): void {
+        if(p.character == BOT_NAME) {
+            let index: number = this.channels.indexOf(p.channel);
+            if(index == -1) throw new Error("Left a channel we weren't in?");
+            this.channels.splice(index, 1);
+            console.log(`Left channel ${channelStore.GetTitle(p.channel)}/${p.channel}.`);
         }
     }
 
@@ -305,6 +356,18 @@ export default class ClientStore
 
             // Joined at 
             console.log("Finished connecting at " + new Date().toUTCString());
+        }
+    }
+
+    private ReceiveChannelMessageMSG(p: Packets.IReceivePacketMSG): void {
+        if(p.message[0] == "!") {
+            let split: string[] = p.message.split(" ");
+            let first: string = split[0].toLowerCase();
+            if(this.msgForwarders[first] != null) {
+                for(let i = 0; i < this.msgForwarders[first].length; i++) {
+                    this.msgForwarders[first][i](p.channel, p.character, p.message);
+                }
+            }
         }
     }
     
@@ -341,6 +404,16 @@ export default class ClientStore
         if(!result) {
             console.log(`Unrecognised command. ${p.character}: ${p.message}`);
             this.SendPM(p.character, MESSAGE_UNRECOGNISED_COMMAND);
+        }
+    }
+
+    private ReceiveRLL(p: Packets.IReceivePacketRLL): void {
+        if(p.type == "dice") {
+            if(this.diceForwarders[p.channel] != null) {
+                if(this.diceForwarders[p.channel][0] == p.rolls[0]) {
+                    this.diceForwarders[p.channel][1](p.character, p.endresult);
+                }
+            }
         }
     }
 

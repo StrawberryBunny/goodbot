@@ -7,6 +7,7 @@ export const STAT_SPERMBANK_DONATIONS: string = "SpermBank Donations";
 export const STAT_SPERMBANK_WITHDRAWALS: string = "SpermBank Withdrawals";
 export const STAT_PAYMENTS_MADE: string = "Payments Made";
 export const STAT_PAYMENTS_TOTAL: string = "Payments Total";
+export const STAT_GAME_SOGGY_STARTED: string = "Games of Soggy Biscuit Started";
 
 export default class StatsStore {
     

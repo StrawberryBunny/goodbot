@@ -43,8 +43,10 @@ export default class PeopleStore {
             firstSeen: new Date().getTime(),
             gender: gender.trim(),
             wallet: 10000,
+            walletTransactions: [],
             permissions: {},
-            messages: []
+            messages: [],
+            ateTheBiscuit: 0
         };
         this.Save();
         console.log("New person seen: " + character);
@@ -158,8 +160,10 @@ export interface PersonData {
     firstSeen: number;
     gender: string;
     wallet: number;
+    walletTransactions: string[][]
     permissions: { [name: string]: boolean };
     messages: string[];
+    ateTheBiscuit: number;
 }
 
 export interface PaymentResult {

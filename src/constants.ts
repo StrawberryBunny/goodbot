@@ -3,9 +3,11 @@ export const TEST_SERVER_ADDRESS: string = "wss://chat.f-list.net/chat2:8799";
 
 export const BOT_NAME: string = "GoodBot";
 
-export const CURRENCY_NAME: string = "fakebux";
+export const CURRENCY_NAME: string = "Goodbot Bux";
 export const CURRENCY_PRE: string = "";
-export const CURRENCY_POST: string = "F";
+export const CURRENCY_POST: string = "💵";
+
+export const CHANNEL_COMMAND_PREFIX: string = "!";
 
 export const STATUS_MESSAGE: string = "In development. That means frequent restarts and interruptions.";
 

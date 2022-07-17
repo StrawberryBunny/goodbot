@@ -6,7 +6,7 @@ import { channelStore, clientStore, peopleStore, spermBankStore, statsStore } fr
 export default class CommandStore {
 
     private commandMap: { [name: string]: CommandNode } = {};
-
+    
     constructor(){
         this.CreateCommands();
     }
@@ -229,7 +229,7 @@ export default class CommandStore {
                     clientStore.SendPM(sender, `You must include an amount and a name.
 
                     Format: [color=cyan]wallet pay <amount> <character name>[/color]
-                    For example: [color=cyan]wallet pay 1000 Bully Meat[/color]`);
+                    For example: [color=cyan]wallet pay 1000 Some Person[/color]`);
                     return;
                 }
 
@@ -239,7 +239,7 @@ export default class CommandStore {
                     clientStore.SendPM(sender, `You must include an amount and a name.
 
                     Format: [color=cyan]wallet pay <amount> <character name>[/color]
-                    For example: [color=cyan]wallet pay 1000 Bully Meat[/color]`);
+                    For example: [color=cyan]wallet pay 1000 Some Person[/color]`);
                     return;
                 }
 
@@ -263,6 +263,8 @@ export default class CommandStore {
                         clientStore.SendPM(sender, `Sorry but the amount specified was not valid. Please use [color=cyan]help wallet[/color] for more information.`);
                         break;
                     case "none":
+                        clientStore.SendPM(sender, `Payment complete.`);
+                        peopleStore.GetPersonData(sender).walletTransactions.push([ sender, receiver, amount.toString() ])
                         break;
                     default:
                         throw new Error("Unhandled payment result.");
